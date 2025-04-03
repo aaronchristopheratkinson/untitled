@@ -1,0 +1,178 @@
+from fpdf import FPDF
+
+# Define a custom PDF class with helper methods for layout
+class WorkbookPDF(FPDF):
+    def header(self):
+        # Use the current section title (set externally)
+        self.set_font("Arial", "B", 14)
+        if hasattr(self, "section_title"):
+            self.cell(0, 10, self.section_title, ln=True, align="C")
+        self.ln(5)
+
+    def add_theorems(self, theorems):
+        self.set_font("Arial", "B", 12)
+        self.cell(0, 10, "Key Theorems / Formulas", ln=True)
+        self.set_font("Arial", "", 11)
+        self.multi_cell(0, 8, theorems)
+        self.ln(5)
+
+    def add_problems(self, problems):
+        self.set_font("Arial", "B", 12)
+        self.cell(0, 10, "Practice Problems", ln=True)
+        self.set_font("Arial", "", 11)
+        for i, prob in enumerate(problems, 1):
+            self.multi_cell(0, 8, f"{i}. {prob}")
+            self.ln(3)
+
+    def add_answers(self, answers):
+        self.add_page()
+        self.set_font("Arial", "B", 12)
+        self.cell(0, 10, "Answer Key", ln=True)
+        self.ln(5)
+        self.set_font("Arial", "", 11)
+        for i, ans in enumerate(answers, 1):
+            self.multi_cell(0, 8, f"{i}. {ans}")
+            self.ln(3)
+
+# Define the content for each section
+sections = [
+    {
+        "title": "Infinite Sequences",
+        "theorems": (
+            "A sequence {a_n} converges to L if, for every small number 'eps' > 0, "
+            "there exists a number N such that for all n > N, |a_n - L| < eps."
+        ),
+        "problems": [
+            "Determine if the sequence a_n = 1/n converges.",
+            "Find the limit of the sequence a_n = 2n/(n+1).",
+            "Determine if the sequence a_n = (-1)^n converges.",
+            "List the first 5 terms of the sequence a_n = n^2 - 3n + 2.",
+            "Does the sequence a_n = (n+1)/n converge? If yes, find its limit.",
+            "Determine if the sequence a_n = cos(1/n) converges.",
+            "Find the limit of the sequence a_n = (3n+2)/(2n+5).",
+            "Determine if the sequence a_n = sqrt(n) - sqrt(n-1) converges.",
+            "Find the limit of the sequence a_n = (n^2 - 1)/(n^2 + 1).",
+            "Determine if the sequence a_n = (-1)^n/n converges."
+        ],
+        "answers": [
+            "Yes, it converges to 0.",
+            "Limit is 2.",
+            "Divergent (oscillatory).",
+            "First 5 terms: 0, 0, 2, 6, 12.",
+            "Yes; limit is 1.",
+            "Converges to 1 (since cos(0) = 1).",
+            "Limit is 3/2.",
+            "Converges to 0.",
+            "Limit is 1.",
+            "Converges to 0."
+        ]
+    },
+    {
+        "title": "Series Convergence",
+        "theorems": (
+            "A series sum(a_n) converges if the sequence of partial sums converges. "
+            "Common tests include the p-test, comparison test, ratio test, and alternating series test."
+        ),
+        "problems": [
+            "Determine if the series sum(1/n) diverges.",
+            "Determine if the series sum(1/n^2) converges.",
+            "Using the p-test, does the series sum(1/n^0.5) converge?",
+            "Using the p-test, does the series sum(1/n^2) converge?",
+            "Determine if the alternating harmonic series sum[(-1)^(n+1)/n] converges.",
+            "Determine if the series sum[(-1)^n/n] converges.",
+            "Test convergence for the series sum((2^n)/(3^n)).",
+            "Determine if the series sum(n/(n^2+1)) converges.",
+            "Determine if the series sum(1/(n*(n+1))) converges.",
+            "Use the ratio test on the series sum(n!/n^n).",
+            "Use the ratio test on the series sum(2^n/n!).",
+            "Determine if the series sum((3^n)/(2^n)) diverges.",
+            "Apply the integral test on the series sum(1/(n*ln(n))) for n >= 2.",
+            "Determine if the series sum[(-1)^n/(sqrt(n))] converges.",
+            "Determine if the series sum(1/n^3) converges."
+        ],
+        "answers": [
+            "Diverges (harmonic series).",
+            "Converges (p = 2 > 1).",
+            "Diverges (p = 0.5 < 1).",
+            "Converges (p = 2 > 1).",
+            "Converges conditionally.",
+            "Converges conditionally.",
+            "Converges (geometric series with ratio 2/3).",
+            "Diverges (behaves like 1/n).",
+            "Converges (telescoping series).",
+            "Converges by the ratio test.",
+            "Converges by the ratio test.",
+            "Diverges (ratio > 1).",
+            "Diverges (integral diverges).",
+            "Converges conditionally (alternating series test).",
+            "Converges absolutely."
+        ]
+    },
+    {
+        "title": "Taylor and Maclaurin Series",
+        "theorems": (
+            "The Taylor series of f(x) centered at a is: \n"
+            "  f(x) = sum from n=0 to infinity of [f^(n)(a)/n!] * (x-a)^n. \n"
+            "The Maclaurin series is the special case when a = 0."
+        ),
+        "problems": [
+            "Find the Maclaurin series for f(x) = e^x.",
+            "Write the first 4 nonzero terms of the Maclaurin series for sin(x).",
+            "Write the first 4 nonzero terms of the Maclaurin series for cos(x).",
+            "Find the Maclaurin series for ln(1+x).",
+            "Find the Taylor series for ln(x) centered at x = 1.",
+            "Find the Maclaurin series for f(x) = 1/(1-x).",
+            "Determine the radius of convergence for the series of 1/(1-x).",
+            "Find the Maclaurin series for f(x) = cosh(x).",
+            "Find the Maclaurin series for f(x) = sinh(x).",
+            "Determine the radius of convergence for the Maclaurin series of e^x.",
+            "Write the first 5 terms of the Taylor series for f(x) = (1+x)^2 centered at 0.",
+            "Find the Taylor series for f(x) = sqrt(1+x) centered at 0.",
+            "Use the Maclaurin series for sin(x) to approximate sin(0.5) (to 4 decimal places).",
+            "Use the Maclaurin series for e^x to approximate e^1 (to 4 decimal places).",
+            "Determine if the Maclaurin series for ln(1+x) converges for x = 1."
+        ],
+        "answers": [
+            "e^x = sum(x^n)/n! for n=0 to infinity.",
+            "sin(x) = x - x^3/3! + x^5/5! - x^7/7! + ...",
+            "cos(x) = 1 - x^2/2! + x^4/4! - x^6/6! + ...",
+            "ln(1+x) = x - x^2/2 + x^3/3 - x^4/4 + ... (for -1 < x <= 1).",
+            "ln(x) = sum[(-1)^(n+1) * (x-1)^n/n] for n>=1, valid for 0 < x <= 2.",
+            "1/(1-x) = sum(x^n) for n=0 to infinity (|x| < 1).",
+            "Radius of convergence is 1.",
+            "cosh(x) = sum(x^(2n))/(2n)! for n=0 to infinity.",
+            "sinh(x) = sum(x^(2n+1))/(2n+1)! for n=0 to infinity.",
+            "Infinite radius.",
+            "(1+x)^2 = 1 + 2x + x^2 + ...",
+            "sqrt(1+x) = 1 + x/2 - x^2/8 + x^3/16 - (5x^4)/128 + ...",
+            "sin(0.5) is approximately 0.4794.",
+            "e is approximately 2.7183.",
+            "Yes; the series converges for x = 1."
+        ]
+    }
+]
+
+# Create the workbook PDF
+workbook = WorkbookPDF()
+workbook.set_auto_page_break(auto=True, margin=15)
+
+# For each section, add a page with the title, theorems, problems, and then add an answer key page.
+for section in sections:
+    workbook.section_title = section["title"]
+    workbook.add_page()
+    # Section Title (centered and large)
+    workbook.set_font("Arial", "B", 16)
+    workbook.cell(0, 10, section["title"], ln=True, align="C")
+    workbook.ln(5)
+    # Theorems/Formulas
+    workbook.add_theorems(section["theorems"])
+    # Practice Problems
+    workbook.add_problems(section["problems"])
+    # Answer Key (on a new page)
+    workbook.add_answers(section["answers"])
+
+# Save the final workbook PDF
+output_path = "/mnt/data/Formatted_Math_Workbook.pdf"
+workbook.output(output_path)
+
+print(f"Workbook PDF created successfully at: {output_path}")
