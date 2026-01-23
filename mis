@@ -1,0 +1,46 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Parameters
+BDNF = np.logspace(-1, 3, 500)  # 0.1 to 1000 pM
+A_max = 100  # % max activation
+n = 1.5  # Hill coefficient
+Kd = 50  # pM (assume same Kd for simplicity; vary baseline [BDNF] instead)
+
+# PAM effect
+alpha_baseline = 1.0
+alpha_PAM = 1.5
+
+# Hill equation
+def activation(BDNF, alpha, Kd, n):
+    BDNF_eff = BDNF * alpha
+    return A_max * (BDNF_eff**n) / (Kd**n + BDNF_eff**n)
+
+# NAc: high baseline BDNF (150 pM after drug)
+A_NAc_baseline = activation(BDNF, alpha_baseline, Kd, n)
+A_NAc_PAM = activation(BDNF, alpha_PAM, Kd, n)
+
+# mPFC: low baseline BDNF (30 pM, minimal drug effect)
+Kd_mPFC = 50  # Same Kd, but shift baseline
+A_mPFC_baseline = activation(BDNF, alpha_baseline, Kd_mPFC, n)
+A_mPFC_PAM = activation(BDNF, alpha_PAM, Kd_mPFC, n)
+
+# Plot
+plt.figure(figsize=(10, 6))
+plt.plot(BDNF, A_NAc_baseline, 'b-', label='NAc (no PAM)', linewidth=2)
+plt.plot(BDNF, A_NAc_PAM, 'b--', label='NAc (+ PAM)', linewidth=2)
+plt.plot(BDNF, A_mPFC_baseline, 'r-', label='mPFC (no PAM)', linewidth=2)
+plt.plot(BDNF, A_mPFC_PAM, 'r--', label='mPFC (+ PAM)', linewidth=2)
+
+# Mark operating points
+plt.axvline(150, color='blue', alpha=0.3, linestyle=':')  # NAc drug level
+plt.axvline(30, color='red', alpha=0.3, linestyle=':')   # mPFC drug level
+
+plt.xscale('log')
+plt.xlabel('[BDNF] (pM)', fontsize=12)
+plt.ylabel('TrkB Activation (% max)', fontsize=12)
+plt.title('Regional TrkB Activation: PAM Effects in NAc vs. mPFC', fontsize=14)
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.show()
